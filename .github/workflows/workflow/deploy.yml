@@ -1,0 +1,39 @@
+name: Build and Deploy
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build project
+      run: npm run build
+
+    - name: Print working directory
+      run: pwd
+
+    - name: List directory contents
+      run: ls -l
+
+    - name: Create out directory
+      run: mkdir -p out
+
+    - name: Archive artifact
+      run: tar -cvf artifact.tar -C out .
+
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: artifact.tar
