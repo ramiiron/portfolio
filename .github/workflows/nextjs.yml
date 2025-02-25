@@ -27,6 +27,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Detect package manager
         id: detect-package-manager
         run: |
@@ -44,11 +45,13 @@ jobs:
             echo "Unable to determine package manager"
             exit 1
           fi
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: ${{ steps.detect-package-manager.outputs.manager }}
+
       - name: Restore cache
         uses: actions/cache@v4
         with:
@@ -59,12 +62,19 @@ jobs:
           # If source files changed but packages didn't, rebuild from a prior cache.
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-
+
       - name: Install dependencies
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
+
       - name: Build with Next.js
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
+
       - name: Show me the files
         run: ls -la
+
+      - name: Debug directory contents
+        run: ls -R ./out || echo "Directory ./out does not exist"
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
